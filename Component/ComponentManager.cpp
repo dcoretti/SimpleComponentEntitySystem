@@ -3,10 +3,21 @@
 
 namespace Walden
 {
+
     ComponentManager::ComponentManager(): currentBitId(0) {
     }
 
     ComponentManager::~ComponentManager() {
+        // TODO Removing component deletion until I can control the creation too.
+        /*
+        std::map<size_t, std::map<int, Component *> >::iterator it;
+        for (it = entitiesByComponentUid.begin(); it != entitiesByComponentUid.end(); ++it) {
+            std::map<int, Component *>::iterator it2;
+            for (it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+                delete it2->second;
+            }
+        }
+        */
     }
 
     void ComponentManager::addComponent(Entity& entity, Component& component) {
@@ -26,7 +37,7 @@ namespace Walden
             // otherwise add the entry to the existing entity's components
             iter->second[entity.id] = &component;
         }
-        entity.components.addComponent(bitId);
+        entity.setComponent(bitId);
     }
 
     void ComponentManager::removeComponent(Entity& entity, Component& component) {
@@ -37,7 +48,7 @@ namespace Walden
                 iter->second.erase(iter2);
             }
         }
-        entity.components.removeComponent(componentTypeBitIds.find(getComponentUid(component))->second);
+        entity.setComponent(componentTypeBitIds.find(getComponentUid(component))->second);
     }
 
     Component * ComponentManager::getComponentFromEntityByType(const Entity& e, size_t componentUid) const {

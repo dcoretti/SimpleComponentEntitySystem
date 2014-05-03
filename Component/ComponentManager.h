@@ -2,7 +2,7 @@
 #define COMPONENT_MANAGER_H
 #include <map>
 #include "Component.h"
-#include "Entity/Entity.h"
+#include "entity/Entity.h"
 namespace Walden
 {
     /* ComponentManager handles associations between sets of entities and components. 
@@ -10,6 +10,7 @@ namespace Walden
     */
     class ComponentManager {
     public:
+
         ComponentManager();
         ~ComponentManager();
 

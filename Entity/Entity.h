@@ -1,9 +1,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
-
-#include "../component/ComponentBitSet.h"
+#include <bitset>
 namespace Walden {
-	class ComponentBitSet;
     /*
         container for a list of components.  
     */
@@ -11,8 +9,17 @@ namespace Walden {
     public:
         Entity(int id);
         
-        const int id;
-        ComponentBitSet components;
+        const int id; 
+
+        bool hasComponent(unsigned int id);
+        void setComponent(unsigned int id);
+        void removeComponent(unsigned int id);
+
+        // Leaving this const here as the component bound checks will only happen here anyway
+        static const unsigned int maxBitIds = 64;  // maximum number of components per entity
+    protected:
+        std::bitset<maxBitIds> components;
     };
 }
+
 #endif

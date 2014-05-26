@@ -17,4 +17,17 @@ namespace Walden {
         currentEntityId++;
         return e;
     }
+
+    // TODO keep track of freed entity ids and reuse those first.
+    Entity * EntityManager::removeEntity(int id) {
+        std::map<int, Entity *>::iterator it = entitiesById.find(id);
+        if (it != entitiesById.end()) {
+            Entity * e = it->second;
+            entitiesById.erase(it);
+            return e;
+        }
+        else {
+            throw std::exception("Entity with id not found!");
+        }
+    }
 }

@@ -1,23 +1,11 @@
 #include "ComponentManager.h"
 #include <typeinfo>
 
+#include <iostream>
 namespace Walden
 {
 
     ComponentManager::ComponentManager(): currentBitId(0) {
-    }
-
-    ComponentManager::~ComponentManager() {
-        // TODO Removing component deletion until I can control the creation too.
-        /*
-        std::map<size_t, std::map<int, Component *> >::iterator it;
-        for (it = entitiesByComponentUid.begin(); it != entitiesByComponentUid.end(); ++it) {
-            std::map<int, Component *>::iterator it2;
-            for (it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-                delete it2->second;
-            }
-        }
-        */
     }
 
     void ComponentManager::addComponent(Entity& entity, Component& component) {
@@ -48,7 +36,7 @@ namespace Walden
                 iter->second.erase(iter2);
             }
         }
-        entity.setComponent(componentTypeBitIds.find(getComponentUid(component))->second);
+        entity.removeComponent(componentUidBitIds.find(getComponentUid(component))->second);
     }
 
     Component * ComponentManager::getComponentFromEntityByType(const Entity& e, size_t componentUid) const {
@@ -56,7 +44,7 @@ namespace Walden
         componentEntities = entitiesByComponentUid.find(componentUid);
         if (componentEntities == entitiesByComponentUid.end())
         {
-            throw std::exception("No components of this type registered.");
+            throw std::exception((std::string("No components of this type registered. uid: ") + std::to_string(componentUid)).c_str());
         }
         
         std::map<int, Component *>::const_iterator componentForEntity = componentEntities->second.find(e.id);
@@ -68,32 +56,36 @@ namespace Walden
         return componentForEntity->second;
     }
 
-    unsigned int ComponentManager::getComponentBitId(Component& component) const {
+    unsigned int ComponentManager::getComponentBitId(const Component& component) const {
         return getComponentBitId(getComponentUid(component));
     }
 
     unsigned int ComponentManager::getComponentBitId(size_t componentUid) const {
-        std::map<size_t, unsigned int>::const_iterator findIter = componentTypeBitIds.find(componentUid);
-        if (findIter == componentTypeBitIds.end()) {
+        std::map<size_t, unsigned int>::const_iterator findIter = componentUidBitIds.find(componentUid);
+        if (findIter == componentUidBitIds.end()) {
             throw std::exception("component doesn't exist!");
         }
         return findIter->second;
     }
 
     // Assign a new global bit id for each unique component type (based on uid)
-    unsigned int ComponentManager::assignBitIdToNewComponents(Component& component) {
-        size_t uid = getComponentUid(component);
-        std::map<size_t, unsigned int>::iterator findIter = componentTypeBitIds.find(uid);
-        if (findIter == componentTypeBitIds.end()) {
+    unsigned int ComponentManager::assignBitIdToNewComponents(const Component& component) {
+        return assignBitIdToComponentType(getComponentUid(component));
+    }
+
+    unsigned int ComponentManager::assignBitIdToComponentType(size_t uid) {
+        std::map<size_t, unsigned int>::iterator findIter = componentUidBitIds.find(uid);
+        if (findIter == componentUidBitIds.end()) {
             if (currentBitId > sizeof(unsigned long long int)) {
                 throw std::exception("The number of registered components is too high!");
             }
-            componentTypeBitIds[uid] = currentBitId;
+            componentUidBitIds[uid] = currentBitId;
             return currentBitId++;
         }
 
         return findIter->second;
     }
+
 
     std::string ComponentManager::getComponentName(const Component& c) const {
         return typeid(c).name();

@@ -13,6 +13,7 @@ namespace Walden
         EntityManager();
         ~EntityManager();
         Entity * createEntity();
+        Entity * removeEntity(int id);
     private:
         std::map<int, Entity *> entitiesById;
         int currentEntityId;

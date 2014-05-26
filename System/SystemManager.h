@@ -1,20 +1,25 @@
 #ifndef SYSTEM_MGR_H
 #define SYSTEM_MGR_H
 
-#include "EntitySystem.h"
-#include <set>
-
-using std::set;
+#include <vector>
+#include <iostream>
+using std::vector;
 
 namespace Walden {
+    class EntitySystem;
+    class System;
+    class Entity; 
+
     class SystemManager {
     public:
-        void registerSystem(EntitySystem * s);
+        void registerEntitySystem(EntitySystem &s);
+        void registerSystem(System &s);
         void registerEntity(Entity &e);
 
-        void updateSystems();
-    private:
-        set<EntitySystem *> systems;
+        virtual void updateSystems();
+    protected:
+        vector<EntitySystem *> entitySystems;
+        vector<System *> allSystems;
     };
 }
 #endif
